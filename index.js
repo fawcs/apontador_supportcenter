@@ -1,11 +1,11 @@
 const request = require("request");
 const csv = require('csv-parse');
 const fs = require('fs');
-const cfg = require('config');
+const cfg = require('./config');
 const results = [];
 
 const create_request = data => {
-  console.log(data);
+  console.log('Realizando ' + create_description(data))
   return {
     method: 'POST',
     url: 'http://support-center.e-it.net/api/json/addTimeEntry',
@@ -28,6 +28,9 @@ const create_request = data => {
     }
   };
 }
+const create_description = data => {
+  return 'Apontamento: ' + data[0] + ' - ' + data[1] + ' Descrição: ' + data[2];
+};
 
 fs.createReadStream('apontamentos.csv')
   .pipe(csv())
@@ -39,7 +42,6 @@ fs.createReadStream('apontamentos.csv')
 
       request(create_request(data), (error, response, body) => {
         if (error) console.log(new Error(error));
-        console.log(response);
-        console.log(body);
+        console.log( create_description(data) + '. Feito com sucesso!' );
       })
     }));
